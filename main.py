@@ -24,7 +24,7 @@ def send_line(user_id, message):
 def main():
     now = datetime.now(tz)
 
-    if now.strftime("%H:%M") != "11:55":
+    if now.strftime("%H:%M") != "13:00":
         print("Not test time yet")
         return
 
