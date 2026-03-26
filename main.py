@@ -9,9 +9,6 @@ LINE_TOKEN = os.getenv("LINE_TOKEN")        # LINE Channel Access Token
 SHEET_URL = os.getenv("SHEET_URL")          # Google Sheet CSV 連結
 tz = pytz.timezone("Asia/Taipei")           # 台北時間
 
-# ====== 測試模式開關 ======
-TEST_MODE = True  # True = 立即發送，不檢查時間；False = 每天 20:30 發送
-
 # ====== 發送 LINE 訊息函式 ======
 def send_line(user_id, message):
     if not user_id.startswith("U"):
@@ -33,11 +30,10 @@ def send_line(user_id, message):
 def main():
     now = datetime.now(tz)
     
-    if not TEST_MODE:
-        # 每天 20:30 自動發送
-        if now.hour != 20 or now.minute < 30 or now.minute > 31:
-            print(f"目前時間 {now.strftime('%H:%M:%S')}，尚未到 20:30，不發送訊息")
-            return
+    # 每天 20:30 自動發送
+    if now.hour != 20 or now.minute < 30 or now.minute > 31:
+        print(f"目前時間 {now.strftime('%H:%M:%S')}，尚未到 20:30，不發送訊息")
+        return
 
     # 讀取 Google Sheet CSV
     try:
@@ -46,22 +42,21 @@ def main():
         print("讀取 Google Sheet 失敗:", e)
         return
 
-    # 如果測試模式就抓今天排班，否則抓明日
-    target_date = (now + timedelta(days=0 if TEST_MODE else 1)).strftime("%Y-%m-%d")
-    schedule = df[df["日期"] == target_date]
+    tomorrow = (now + timedelta(days=1)).strftime("%Y-%m-%d")
+    schedule = df[df["日期"] == tomorrow]
 
     if schedule.empty:
-        print(f"{'今天' if TEST_MODE else '明日'} ({target_date}) 沒有排班資料")
+        print(f"明日 ({tomorrow}) 沒有排班資料")
         return
 
     # 發送訊息
     for _, row in schedule.iterrows():
-        message = f"""📢 {'今天' if TEST_MODE else '明日'}排班提醒
+        message = f"""📢 明日排班提醒
 👤 {row['姓名']}
-📅 {target_date}
+📅 {tomorrow}
 🕐 {row['班別']}
 
-請準時出勤 ✅"""
+請務必準時07:00出勤 ✅"""
         send_line(row["LINE_ID"], message)
 
 # ====== 執行 ======
