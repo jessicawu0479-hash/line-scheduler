@@ -24,8 +24,8 @@ def send_line(user_id, message):
 def main():
     now = datetime.now(tz)
 
-    if now.strftime("%H:%M") != "20:30":
-        print("Not 20:30 yet")
+    if now.strftime("%H:%M") != "11:55":
+        print("Not test time yet")
         return
 
     df = pd.read_csv(SHEET_URL)
