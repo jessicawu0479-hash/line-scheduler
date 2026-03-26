@@ -1,13 +1,9 @@
-import pandas as pd
 import requests
-from datetime import datetime, timedelta
-import pytz
 import os
 
+# 讀環境變數
 LINE_TOKEN = os.getenv("LINE_TOKEN")
-SHEET_URL = os.getenv("SHEET_URL")
-
-tz = pytz.timezone("Asia/Taipei")
+TEST_USER_ID = os.getenv("TEST_USER_ID")  # 你的 LINE User ID，用於測試
 
 def send_line(user_id, message):
     url = "https://api.line.me/v2/bot/message/push"
@@ -19,29 +15,12 @@ def send_line(user_id, message):
         "to": user_id,
         "messages": [{"type": "text", "text": message}]
     }
-    requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data)
+    print(f"Sent to {user_id}: {r.status_code}")
 
 def main():
-    now = datetime.now(tz)
-
-    if now.strftime("%H:%M") != "13:00":
-        print("Not test time yet")
-        return
-
-    df = pd.read_csv(SHEET_URL)
-    tomorrow = (now + timedelta(days=1)).strftime("%Y-%m-%d")
-
-    filtered = df[df["日期"] == tomorrow]
-
-    for _, row in filtered.iterrows():
-        msg = f"""📢 明日排班提醒
-👤 {row['姓名']}
-📅 {tomorrow}
-🕐 {row['班別']}
-
-請準時出勤 ✅"""
-
-        send_line(row["LINE_ID"], msg)
+    print("Running test LINE message...")
+    send_line(TEST_USER_ID, "🚀 測試訊息，LINE Bot 成功！")
 
 if __name__ == "__main__":
     main()
