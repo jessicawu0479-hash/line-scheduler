@@ -56,8 +56,8 @@ def send_schedule(target_date, title):
     for _, row in schedule.iterrows():
         message = f"""{title}
 👤 {row['姓名']}
-📅 {target_date}
-🕐 {row['班別']}
+🕐 {target_date}
+🛏️ {row['班別']}
 
 請務必準時出勤✅"""
 
@@ -98,7 +98,7 @@ def main():
 
         print("🌅 發送今日排班")
 
-        send_schedule(today_str, "🌅今日晨抽提醒!!!（請準時出勤）")
+        send_schedule(today_str, "🌅!!!今日晨抽提醒!!!🌅")
 
 # ====== 持續運行（Railway 必備）======
 if __name__ == "__main__":
